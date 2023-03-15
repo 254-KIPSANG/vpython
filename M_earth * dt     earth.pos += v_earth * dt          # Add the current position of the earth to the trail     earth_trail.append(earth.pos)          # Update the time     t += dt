@@ -1,0 +1,39 @@
+from vpython import *
+
+# Set up the scene
+scene = canvas(width=800, height=600, center=vector(0,0,0), background=color.black)
+sun = sphere(pos=vector(0,0,0), radius=1, color=color.yellow, emissive=True)
+earth = sphere(pos=vector(0,0,2), radius=0.3, color=color.blue)
+
+# Set up initial conditions
+G = 6.6743e-11 # gravitational constant
+M_sun = 1.989e30 # mass of the sun
+M_earth = 5.972e24 # mass of the earth
+v_earth = vector(0,0,30000) # initial velocity of the earth
+
+# Set up the trail
+earth_trail = curve(color=color.white, radius=0.1)
+earth_trail.append(earth.pos)
+
+# Define the time step and total simulation time
+dt = 1000 # time step in seconds
+t_total = 31536000 * 10 # total simulation time in seconds (10 earth years)
+
+# Start the simulation loop
+t = 0
+while t < t_total:
+    rate(100)
+    
+    # Calculate the gravitational force on the earth
+    r = earth.pos - sun.pos
+    F_gravity = - G * M_sun * M_earth * r / mag(r)**3
+    
+    # Update the velocity and position of the earth
+    v_earth += F_gravity / M_earth * dt
+    earth.pos += v_earth * dt
+    
+    # Add the current position of the earth to the trail
+    earth_trail.append(earth.pos)
+    
+    # Update the time
+    t += dt
